@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+env/
+
+# Secrets
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Data & models
+data/raw/*.csv
+!data/raw/.gitkeep
+*.pkl
+*.joblib
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
