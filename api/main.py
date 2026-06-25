@@ -28,6 +28,16 @@ def verify_api_key(x_api_key: str | None = Header(default=None)) -> None:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
 
+@app.get("/", tags=["System"])
+def root():
+    return {
+        "message": "Sales Forecast API is running",
+        "docs": "/docs",
+        "health": "/health",
+        "metrics": "/metrics",
+    }
+
+
 @app.get("/health", response_model=HealthResponse, tags=["System"])
 def health_check():
     db_ok = services.check_database()
