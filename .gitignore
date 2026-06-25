@@ -20,8 +20,11 @@ data/raw/*.csv
 !data/raw/.gitkeep
 *.pkl
 *.joblib
+models/*.joblib
+!models/.gitkeep
 logs/
 *.log
+!logs/.gitkeep
 
 # OS
 .DS_Store
