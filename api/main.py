@@ -3,6 +3,8 @@ FastAPI server:
 uvicorn api.main:app --reload
 """
 
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI, Header, HTTPException
 
 from api import services
@@ -15,11 +17,40 @@ from api.schemas import (
     PredictionItem,
 )
 from config.settings import settings
+from ml.features import MODEL_PATH, load_daily_metrics
+
+
+def _train_model_on_startup() -> None:
+    if MODEL_PATH.exists():
+        return
+
+    try:
+        data = load_daily_metrics()
+        if len(data) < 30:
+            print(f"[WARN] Startup train skipped: need 30+ days, got {len(data)}")
+            return
+
+        from ml.predict import save_predictions
+        from ml.train import train_model
+
+        train_model()
+        save_predictions()
+        print("[OK] Model trained on startup")
+    except Exception as e:
+        print(f"[WARN] Startup model training failed: {e}")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    _train_model_on_startup()
+    yield
+
 
 app = FastAPI(
     title="Sales Forecast API",
     description="ETL + ML pipeline API for sales prediction",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 
